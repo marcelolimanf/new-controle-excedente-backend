@@ -1,6 +1,4 @@
 const database = require('../database')
-const moment = require('moment')
-moment.locale('pt-br')
 
 module.exports = {
     async getBoxs (request, response) {
@@ -57,13 +55,15 @@ module.exports = {
     },
 
     async clearBox (request, response) {
-        const { id } = request.query
+        const { id, edited_by, edited_date } = request.query
 
         database.update({
             sku: '', 
             product_name: '',
             total_quantity: '',
-            variation:''
+            variation:'',
+            edited_by,
+            edited_date
         })
         .where({ id })
         .table('boxs')
@@ -76,7 +76,7 @@ module.exports = {
     },
 
     async editBox (request, response) {
-        const { number, sku, product_name, total_quantity, variation, edited_by } = request.body
+        const { number, sku, product_name, total_quantity, variation, edited_by, edited_date } = request.body
 
         database.update({
             number,
@@ -85,7 +85,7 @@ module.exports = {
             total_quantity,
             variation: JSON.stringify(variation),
             edited_by,
-            edited_date: moment().format('LLL')
+            edited_date
         })
         .where({ number })
         .table('boxs')
