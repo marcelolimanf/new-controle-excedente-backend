@@ -2,11 +2,70 @@ const database = require('../database')
 
 module.exports = {
     async getBoxs (request, response) {
-        var { quantity, number, page } = request.query
+        var { quantity, number, page, action, search_number, search_name, search_sku, search_color, search_size, box_id } = request.query
 
         if(!page){
             page = 1
         }
+
+        if(action == 'search_by_number') {
+            return database("boxs").orderBy(['number']).then(results => {
+
+                var newBox = []
+
+                results.filter(box => {
+                  if(box.number.includes(search_number)){
+                    newBox.push(box)
+                  }
+                })
+
+                return response.status(200).json({ data: newBox })
+            })
+        }
+
+        if(action == 'search_by_sku') {
+            return database("boxs").orderBy(['number']).where({ sku: search_sku }).then(results => {
+                return response.status(200).json({ data: results })
+            })
+        }
+
+        if(action == 'search_by_name') {
+            return database("boxs").orderBy(['number']).then(results => {
+
+                var newBox = []
+
+                results.filter(box => {
+                  if(box.product_name.toLocaleLowerCase().includes(search_name.toLocaleLowerCase())){
+                    newBox.push(box)
+                  }
+                })
+
+                return response.status(200).json({ data: newBox })
+            })
+        }
+
+        if(action == 'search_by_variation') {
+            return database("boxs").orderBy(['number']).then(results => {
+
+                var newBox = []
+
+                results.filter(box => {
+                    if(box.sku.includes(search_sku) && box.variation.toLocaleLowerCase().includes(search_color.toLocaleLowerCase()) && box.variation.toLocaleLowerCase().includes(search_size.toLocaleLowerCase())){
+                        newBox.push(box)
+                    }
+                })
+
+                return response.status(200).json({ data: newBox })
+            }).catch(err => console.log(err))
+        }
+
+        if(action == 'search_by_boxId') {
+            return database("boxs").orderBy(['number']).where({ id: box_id }).then(results => {
+                return response.status(200).json({ data: results })
+            })
+        }
+        
+
         
         if(quantity == 'all') {
             return database("boxs").orderBy(['number']).then(results => {
