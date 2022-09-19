@@ -64,8 +64,19 @@ module.exports = {
                 return response.status(200).json({ data: results })
             })
         }
+        if(action == 'sort_by_smallest_quantity') {
+            return database("boxs").select('*').then(results => {
+                var sort = results.sort(function (a, b) {  return a.total_quantity - b.total_quantity;  })
+                 return response.status(200).json({ data: sort })
+             })
+        }
+        if(action == 'sort_by_largest_quantity') {
+            return database("boxs").select('*').then(results => {
+               var sort = results.sort(function (a, b) {  return a.total_quantity - b.total_quantity;  }).reverse()
+                return response.status(200).json({ data: sort })
+            })
+        }
         
-
         
         if(quantity == 'all') {
             return database("boxs").orderBy(['number']).then(results => {
@@ -85,7 +96,7 @@ module.exports = {
             return response.status(200).json(data)
     
         }else{
-            return response.status(200).json({ ok: true })
+            return response.status(200).json({ ok: false })
         }
     },
 
