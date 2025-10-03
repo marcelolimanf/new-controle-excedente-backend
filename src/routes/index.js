@@ -18,7 +18,6 @@ routes.post('/edit/variation', Auth, BoxController.editVariation)
 routes.post('/add/box', Auth, BoxController.addBox)
 
 
-
 //GET requests
 routes.get('/get/boxs', Auth, BoxController.getBoxs)
 routes.get('/get/products', Auth, ProductController.getProducts)

@@ -25,23 +25,41 @@ module.exports = {
     },
 
     async editProduct (request, response) {
-        var { quantity, page } = request.query
+        const { id, sku, name } = request.query
 
-        if(!page){
-            page = 1
+        if (!id || !sku || !name) {
+            return response.status(400).json({ ok: false, message: 'ID, SKU e nome são obrigatórios.' })
         }
-        
-        if(quantity == 'all') {
-            return database("products").paginate({
-                perPage: 12,
-                currentPage: page
-              }).then(results => {
-                response.status(200).json(results)
+
+        try {
+            const product = await database.select().table('products').where({ id }).first()
+            
+            if (!product) {
+                return response.status(404).json({ ok: false, message: 'Produto não encontrado.' })
+            }
+
+            const existingSku = await database.select().table('products').where({ sku }).whereNot({ id }).first()
+            if (existingSku) {
+                return response.status(400).json({ ok: false, message: 'Já existe outro produto com este SKU.' })
+            }
+
+            await database('products')
+                .where({ id })
+                .update({ 
+                    sku,
+                    name 
+                })
+
+            return response.status(200).json({ 
+                ok: true, 
+                message: 'Produto atualizado com sucesso!' 
             })
-        }else{
-            return response.status(200).json({ ok: true })
+        } catch (error) {
+            return response.status(500).json({ 
+                ok: false, 
+                message: 'Ocorreu algum erro, contate o Evandro.' 
+            })
         }
-    
     },
 
     async getProducts (request, response) {
