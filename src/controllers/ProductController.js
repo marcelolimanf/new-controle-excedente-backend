@@ -25,7 +25,7 @@ module.exports = {
     },
 
     async editProduct (request, response) {
-        const { id, sku, name } = request.query
+        const { id, sku, name } = request.body
 
         if (!id || !sku || !name) {
             return response.status(400).json({ ok: false, message: 'ID, SKU e nome são obrigatórios.' })
@@ -50,9 +50,16 @@ module.exports = {
                     name 
                 })
 
+            await database('boxs')
+                .where({ sku: product.sku })
+                .update({
+                    sku: sku,
+                    product_name: name
+                })
+
             return response.status(200).json({ 
                 ok: true, 
-                message: 'Produto atualizado com sucesso!' 
+                message: 'Produto e caixas atualizados com sucesso!' 
             })
         } catch (error) {
             return response.status(500).json({ 
@@ -74,16 +81,16 @@ module.exports = {
     }
     ,
         async searchProduct(request, response) {
-            const { query } = request.query
+            const { search } = request.query
 
-            if (!query) {
+            if (!search) {
                 return response.status(400).json({ ok: false, message: 'Parâmetro de busca obrigatório.' })
             }
 
             try {
                 const results = await database('products')
-                    .where('name', 'like', `%${query}%`)
-                    .orWhere('sku', 'like', `%${query}%`)
+                    .where('name', 'like', `%${search}%`)
+                    .orWhere('sku', 'like', `%${search}%`)
                 return response.status(200).json({ ok: true, products: results })
             } catch (error) {
                 return response.status(500).json({ ok: false, message: 'Ocorreu algum erro, contate o Evandro.' })
