@@ -72,4 +72,21 @@ module.exports = {
             return response.status(200).json({ ok: true })
         }
     }
+    ,
+        async searchProduct(request, response) {
+            const { query } = request.query
+
+            if (!query) {
+                return response.status(400).json({ ok: false, message: 'Parâmetro de busca obrigatório.' })
+            }
+
+            try {
+                const results = await database('products')
+                    .where('name', 'like', `%${query}%`)
+                    .orWhere('sku', 'like', `%${query}%`)
+                return response.status(200).json({ ok: true, products: results })
+            } catch (error) {
+                return response.status(500).json({ ok: false, message: 'Ocorreu algum erro, contate o Evandro.' })
+            }
+        }
 }

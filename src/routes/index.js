@@ -29,5 +29,6 @@ routes.get('/search/box', Auth, BoxController.searchBox)
 
 routes.get('/add/product', Auth, ProductController.addProduct)
 routes.get('/edit/product', Auth, ProductController.editProduct)
+routes.get('/sesearchar/product', Auth, ProductController.searchProduct)
 
 module.exports = routes
